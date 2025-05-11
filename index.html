@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CinnaPC</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <audio id="background-audio" src="audio.mp3" autoplay loop></audio>
+    
+    <div id="retro-bar">
+        <span id="app-name">CinnaPC</span>
+        <div class="right-section">
+            <button id="fullscreen-button" onclick="toggleFullscreen()"></button>
+            <span id="time"></span>
+            <span id="date"></span>
+        </div>
+    </div>
+        <div id="game-container">
+            <div id="window-bar">
+            <div class="bars">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <div class="window-title">NubeMail</div>
+        </div>
+        <header>
+            <h1>¡Tienes 1 nuevo correo!</h1>
+        </header>
+        <main>
+            <section style="margin-left: 3%; margin-right: 3%; line-height: 1.5;" id="step-1" class="step active">
+                <h2>Puñeta...</h2>
+                <p style="text-align: justify;">...Cinnamoroll estaba disfrutando de un tranquilo día volando entre nubes de algodón cuando recibió una misión urgente: "Hay alguien muy especial esperando una gran <b>pregunta</b>, ¡pero solo un corazón valiente puede desbloquearla!".<br><br>Con sus orejitas extendidas como alas y su espíritu aventurero, Cinnamoroll deberá completar un desafío para reunir los fragmentos del mensaje secreto. Solo así podrá revelarlo...</p>
+                <button onclick="nextStep(1)">Empezar</button>
+            </section>
+            <section id="step-2" class="step">
+                <h2>SweetMatch</h2>
+                <p>¡Ayuda a Cinnamoroll a encontrar todas las parejitas para descifrar el mensaje!</p>
+                <button onclick="nextStep(2)">Siguiente</button>
+            </section>
+            <section id="step-3" class="step">
+                <h2>La Pregunta Final</h2>
+                <p>Ana GDCP, ¿quieres salir conmigo?</p>
+                <button onclick="showFinalMessage()">Sí</button>
+                <button>No</button>
+            </section>
+        </main>
+        <footer>
+            <p>Hecho con ❤️ por Emergencias112</p>
+        </footer>
+    </div>
+    <script src="script.js"></script>
+    <script src="game.js"></script>
+</body>
+</html>

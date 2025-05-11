@@ -1,0 +1,329 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+body {
+    font-family: 'Press Start 2P', monospace; /* Fuente pixelada para todo */
+    background-color: #ffe4e1; /* Fondo rosa */
+    color: #333;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    padding-top: 40px; /* Espacio para la barra retro */
+    background-position: 10% 10%; /* Ajusta la posición más abajo */
+    background-repeat: repeat; /* Asegura que el patrón geométrico se repita */
+    background-size: 35%; /* Reduce el tamaño de la imagen */
+    transform: none; /* Elimina la rotación de toda la página */
+    transform-origin: top left; /* Mantiene el punto de origen en la esquina superior izquierda */
+    overflow: hidden; /* Evita el desplazamiento vertical */
+    background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.3) 25%, transparent 25%, transparent 75%, rgba(255, 255, 255, 0.1) 75%, rgba(255, 255, 255, 0.1)),
+                      linear-gradient(45deg, rgba(255, 255, 255, 0.3) 25%, transparent 25%, transparent 75%, rgba(255, 255, 255, 0.1) 75%, rgba(255, 255, 255, 0.1));
+    background-size: 25px 25px; /* Tamaño del patrón */
+    background-position: 0 0, 10px 10px; /* Desplazamiento para crear un efecto de cuadrícula */
+    user-select: none; /* Evita la selección de texto en toda la página */
+    -webkit-user-select: none; /* Compatibilidad con navegadores basados en WebKit */
+    -ms-user-select: none; /* Compatibilidad con Internet Explorer */
+}
+
+body::before {
+    content: '';
+    position: absolute;
+    top: 10%;
+    left: 3%;
+    width: 40%;
+    height: 40%;
+    background-image: url('imagen1.webp'); /* Imagen de fondo */
+    background-repeat: no-repeat;
+    background-size: contain; /* Ajusta el tamaño de la imagen */
+    transform: rotate(-10deg); /* Rota solo la imagen */
+    z-index: -1; /* Asegura que esté detrás del contenido */
+}
+
+body::after {
+    content: '';
+    position: absolute;
+    bottom: 1%;
+    right: 0%; /* Mueve la imagen un poco a la derecha */
+    width: 30%;
+    height: 30%;
+    background-image: url('imagen2.webp'); /* Segunda imagen de fondo */
+    background-repeat: no-repeat;
+    background-size: contain; /* Ajusta el tamaño de la imagen */
+    transform: rotate(10deg); /* Rota ligeramente la imagen */
+    z-index: -1; /* Asegura que esté detrás del contenido */
+}
+
+#game-container {
+    text-align: center;
+    background: #fff;
+    padding: 20px;
+    border-radius: 0; /* Bordes rectos */
+    box-shadow: 10px 10px 0px #ffb6c1; /* Sombra desplazada */
+    width: 90%; /* Aumenta el ancho de la ventana */
+    max-width: 730px; /* Aumenta el tamaño máximo permitido */
+    height: auto; /* Permite que la altura se ajuste automáticamente */
+    border: 2px solid #ff69b4; /* Borde rosa para el estilo retro */
+    padding: 0;
+    margin-top: -20px; /* Mueve la ventana del juego un poco más arriba */
+    position: absolute; /* Permite mover la ventana */
+    cursor: grab; /* Cambia el cursor para indicar que se puede arrastrar */
+}
+
+#game-container:active {
+    cursor: grabbing; /* Cambia el cursor mientras se arrastra */
+}
+
+header h1 {
+    margin-bottom: 20px;
+    color: #ff69b4; /* Color rosa fuerte */
+    font-size: 16px; /* Tamaño ajustado para el estilo retro */
+}
+
+.step {
+    display: none;
+}
+
+.step.active {
+    display: block;
+}
+
+button:not(#fullscreen-button) {
+    background-color: #ff69b4; /* Botones rosas */
+    color: white;
+    border: 2px solid #ff1493; /* Borde rosa oscuro */
+    padding: 10px 20px;
+    border-radius: 0; /* Bordes rectos para estilo pixel art */
+    cursor: pointer;
+    font-size: 12px; /* Tamaño ajustado para el estilo retro */
+    font-family: 'Press Start 2P', monospace; /* Fuente pixelada */
+    box-shadow: 4px 4px 0px #ff1493; /* Sombra para efecto 3D */
+    text-transform: uppercase; /* Texto en mayúsculas para estilo retro */
+}
+
+button:not(#fullscreen-button):hover {
+    background-color: #ff1493; /* Rosa más oscuro al pasar el ratón */
+    box-shadow: 2px 2px 0px #ff1493; /* Reduce la sombra al pasar el ratón */
+}
+
+#retro-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #000;
+    color: #fff;
+    font-family: 'Press Start 2P', monospace; /* Fuente pixelada */
+    padding: 5px 10px;
+    font-size: 13px;
+    border-bottom: 2px solid #ff69b4; /* Línea rosa para mantener el estilo kawaii */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000; /* Asegura que esté encima de otros elementos */
+    box-sizing: border-box; /* Asegura que el padding no afecte el ancho */
+}
+
+#retro-bar .right-section {
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+    border: 1px solid #ff69b4; /* Contenedor rosa para los elementos */
+    height: 100%; /* Ocupa toda la altura de la barra */
+    padding: 0 5px; /* Reduce el margen entre las barras laterales y los elementos */
+    box-sizing: border-box; /* Asegura que el padding no afecte el tamaño */
+    border-top: none; /* Elimina el borde superior */
+    border-bottom: none; /* Elimina el borde inferior */
+}
+
+#retro-bar .right-section span {
+    display: flex;
+    align-items: center;
+    padding: 0 5px; /* Reduce el margen interno de cada elemento */
+    height: 100%; /* Cada elemento ocupa toda la altura del contenedor */
+    box-sizing: border-box;
+    border-right: 1px solid #ff69b4; /* Línea vertical rosa */
+}
+
+#retro-bar .right-section span:first-child {
+    border-right: 1px solid #ff69b4; /* Línea vertical rosa a la izquierda de la hora */
+    padding-right: 10px;
+    margin-right: 10px;
+}
+
+#retro-bar .right-section span:nth-child(2) {
+    border-left: 1px solid #ff69b4; /* Línea vertical rosa entre pantalla completa y la hora */
+    padding-left: 10px;
+    margin-left: 10px;
+    height: 100%; /* Asegura que la línea tenga la misma altura */
+}
+
+#retro-bar .right-section span:last-child {
+    border-right: none; /* Elimina la línea vertical del último elemento */
+}
+
+#retro-bar span {
+    display: flex;
+    align-items: center;
+}
+
+#retro-bar span:not(:last-child) {
+    border-right: 1px solid #ff69b4; /* Línea vertical rosa */
+    padding-right: 10px;
+    margin-right: 10px;
+}
+
+#audio-control {
+    cursor: pointer;
+    font-size: 12px;
+    color: #fff;
+}
+
+#app-name {
+    font-weight: bold;
+}
+
+#date-time {
+    font-style: italic;
+}
+
+#window-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #000;
+    color: #fff;
+    font-family: 'Press Start 2P', monospace;
+    padding: 5px 10px;
+    font-size: 13px;
+    border-top: 2px solid #ff69b4; /* Borde rosa para el estilo retro */
+    box-sizing: border-box;
+    position: relative;
+    top: -2px; /* Ajusta la posición para que se muestre encima del cuadro */
+    z-index: 10; /* Asegura que esté encima del contenido */
+    margin: 0;
+    padding-top: 1vh;
+    padding-bottom: 1vh;
+}
+
+#window-bar .bars {
+    display: flex;
+    flex-direction: column; /* Coloca las barras en paralelo, una encima de la otra */
+    gap: 2px; /* Espaciado entre las barras */
+}
+
+#window-bar .bars span {
+    display: block;
+    width: 28px;
+    height: 5px;
+    background-color: #ff69b4; /* Color rosa para las barras */
+}
+
+#window-bar .bars span:nth-child(1) {
+    height: 2px; /* Primera barra ahora es la más delgada */
+}
+
+#window-bar .bars span:nth-child(2) {
+    height: 2px; /* Segunda barra */
+}
+
+#window-bar .bars span:nth-child(3) {
+    height: 4px; /* Tercera barra ahora es la más gruesa */
+}
+
+#window-bar .window-title {
+    margin-left: auto;
+    color: #fff;
+}
+
+#fullscreen-button {
+    width: 20px;
+    height: 20px;
+    background-color: transparent;
+    border: none;
+    background-image: url('pantalla1.svg'); /* Icono para activar pantalla completa */
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center; /* Centra el icono */
+    cursor: pointer;
+    -webkit-appearance: none; /* Elimina el efecto hover predeterminado */
+    -moz-appearance: none;
+    appearance: none;
+}
+
+#fullscreen-button.fullscreen {
+    background-image: url('pantalla2.svg'); /* Icono para salir de pantalla completa */
+}
+
+#fullscreen-button:hover {
+    background-color: #333;
+}
+
+footer {
+    font-size: 11px; /* Tamaño pequeño para el estilo retro */
+    color: #ff69b4;
+    margin-top: 20px;
+}
+
+/* Styles for the matching pairs game */
+#game-board {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.tile {
+    width: 100px;
+    height: 100px;
+    perspective: 1000px;
+    cursor: pointer;
+    margin: auto;
+}
+
+.tile .front-face,
+.tile .back-face {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    backface-visibility: hidden;
+    border: 2px solid #931a5b;
+    border-radius: 5px;
+}
+
+.tile .front-face {
+    background: #ccc;
+}
+
+.tile .back-face {
+    transform: rotateY(180deg);
+    background-size: cover;
+    background-position: center;
+}
+
+.tile.flipped .front-face {
+    transform: rotateY(180deg);
+}
+
+.tile.flipped .back-face {
+    transform: rotateY(0);
+}
+
+#step-3 {
+    animation: fadeIn 5s ease-in-out;
+}
+
+#step-3 button:nth-of-type(2) {
+    transition: all 0.3s ease-in-out; /* Animación suave para el movimiento */
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
