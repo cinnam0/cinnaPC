@@ -46,7 +46,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const frontFace = document.createElement("div");
         frontFace.classList.add("front-face");
-        
+        frontFace.style.background = "white"; // Fondo blanco
+        frontFace.style.display = "flex";
+        frontFace.style.alignItems = "center";
+        frontFace.style.justifyContent = "center";
+        frontFace.style.fontSize = "2rem"; // Tamaño del emoji
+        frontFace.textContent = "❤️"; // Emoji de corazón
+
         const backFace = document.createElement("div");
         backFace.classList.add("back-face");
         backFace.style.backgroundImage = `url(${image})`;
