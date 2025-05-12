@@ -17,8 +17,20 @@
             <span id="date"></span>
         </div>
     </div>
-        <div id="game-container">
-            <div id="window-bar">
+
+    <div id="desktop">
+        <div class="app-icon" onclick="showTrashMessage()">
+            <img src="trash-bin.png" alt="Trash Bin Icon" class="icon">
+            <span class="icon-label">Papelera</span>
+        </div>
+        <div class="app-icon" onclick="openNubeMail()">
+            <img src="mail.png" alt="NubeMail Icon" class="icon">
+            <span class="icon-label">NubeMail</span>
+        </div>
+    </div>
+
+    <div id="game-container" style="display: none;">
+        <div id="window-bar">
             <div class="bars">
                 <span></span>
                 <span></span>
@@ -41,17 +53,64 @@
                 <button onclick="nextStep(2)">Siguiente</button>
             </section>
             <section id="step-3" class="step">
-                <h2>La Pregunta Final</h2>
+                <h2>¡Se ha desvelado la pregunta!</h2>
                 <p>Ana GDCP, ¿quieres salir conmigo?</p>
                 <button onclick="showFinalMessage()">Sí</button>
                 <button>No</button>
             </section>
         </main>
-        <footer>
+        <footer id="footer" style="display: none;">
             <p>Hecho con ❤️ por Emergencias112</p>
         </footer>
     </div>
     <script src="script.js"></script>
     <script src="game.js"></script>
+    <script>
+        function openNubeMail() {
+            const gameContainer = document.getElementById('game-container');
+            gameContainer.style.display = 'block';
+        }
+
+        function showFinalMessage() {
+            const step3 = document.getElementById("step-3");
+
+            // Elimina los botones y el texto anterior
+            step3.innerHTML = `
+                <h2>¡SÍÍÍÍ!</h2>
+                <p style="line-height: 1.6;">Prepárate para pasártelo súper bien (conmigo) (tu novio)</p>
+                <img src="final.gif" alt="Celebración final" style="max-width: 35%; height: auto;">
+                <p style="line-height: 1.6;">Al hacer clic en "Sí", usted ha ingresado en un compromiso 100% serio, legal e irrevocable con el remitente de esta solicitud.<br>
+                Este acuerdo no admite devoluciones. Cualquier intento de retroceso será automáticamente redirigido a un tribunal de guerra y debidamente penado.<br><br>
+                O no.</p>
+            `;
+
+            // Muestra el footer
+            document.getElementById("footer").style.display = "block";
+        }
+
+        function showTrashMessage() {
+            const message = document.createElement('div');
+            message.textContent = 'La papelera está vacía';
+            message.style.position = 'fixed';
+            message.style.top = `${event.clientY}px`;
+            message.style.left = `${event.clientX}px`;
+            message.style.backgroundColor = '#000';
+            message.style.color = '#fff';
+            message.style.padding = '5px 10px';
+            message.style.borderRadius = '5px';
+            message.style.fontSize = '12px';
+            message.style.zIndex = '1000';
+            document.body.appendChild(message);
+
+            setTimeout(() => {
+                document.body.removeChild(message);
+            }, 2000);
+        }
+
+        function closeNubeMail() {
+            const gameContainer = document.getElementById('game-container');
+            gameContainer.style.display = 'none';
+        }
+    </script>
 </body>
 </html>
