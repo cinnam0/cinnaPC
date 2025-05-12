@@ -152,7 +152,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    audio.loop = true; // Asegura que el audio se repita continuamente
+    audio.loop = true; // Asegura que el audio se repita continuamente    const musicContainer = document.getElementById('music-container');
 });
 
 document.addEventListener('click', () => {
@@ -171,3 +171,70 @@ document.addEventListener('click', () => {
         });
     }
 }, { once: true }); // Solo se ejecuta una vez tras la primera interacción del usuario
+
+function openMusicRoll() {
+    const musicContainer = document.getElementById('music-container');
+    const retroBar = document.getElementById('retro-bar');
+    musicContainer.style.display = 'block';
+    
+    // Calcular posición inicial
+    const retroBarHeight = retroBar.offsetHeight;
+    const padding = 20;
+    
+    musicContainer.style.top = (retroBarHeight + padding) + 'px';
+    
+    // Centrar horizontalmente sin usar transform
+    const windowWidth = window.innerWidth;
+    const containerWidth = musicContainer.offsetWidth;
+    musicContainer.style.left = Math.max(0, (windowWidth - containerWidth) / 2) + 'px';
+    
+    updateMusicProgress();
+}
+
+function togglePlay() {
+    const audio = document.getElementById('background-audio');
+    const btn = document.getElementById('play-pause-btn');
+    
+    if (audio.paused) {
+        audio.play();
+        btn.textContent = '⏸';
+    } else {
+        audio.pause();
+        btn.textContent = '▶';
+    }
+}
+
+function updateMusicProgress() {
+    const audio = document.getElementById('background-audio');
+    const progress = document.querySelector('.progress');
+    const currentTime = document.getElementById('current-time');
+    const totalTime = document.getElementById('total-time');
+
+    function formatTime(seconds) {
+        const mins = Math.floor(seconds / 60);
+        const secs = Math.floor(seconds % 60);
+        return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+
+    // Actualizar el tiempo total inmediatamente si los metadatos ya están cargados
+    if (audio.duration) {
+        totalTime.textContent = formatTime(audio.duration);
+    }
+
+    // Evento para el tiempo total
+    audio.addEventListener('loadedmetadata', () => {
+        totalTime.textContent = formatTime(audio.duration);
+    });
+
+    // Evento para el tiempo actual y la barra de progreso
+    audio.addEventListener('timeupdate', () => {
+        const percent = (audio.currentTime / audio.duration) * 100;
+        progress.style.width = percent + '%';
+        currentTime.textContent = formatTime(audio.currentTime);
+    });
+}
+
+function closeMusicRoll() {
+    const musicContainer = document.getElementById('music-container');
+    musicContainer.style.display = 'none';
+}

@@ -26,11 +26,24 @@
         <div class="app-icon" onclick="openNubeMail()">
             <img src="mail.png" alt="NubeMail Icon" class="icon">
             <span class="icon-label">NubeMail</span>
+        </div>        <div class="app-icon" onclick="openMusicRoll()">
+            <img src="music.png" alt="MusicRoll Icon" class="icon">
+            <span class="icon-label">MusicRoll</span>
+        </div>        <div class="app-icon" onclick="openLoveNote()">
+            <img src="notepad.png" alt="LoveNote Icon" class="icon">
+            <span class="icon-label">LoveLetter</span>
+        </div>        <div class="app-icon" onclick="openWeather()">
+            <img src="rainbow.png" alt="Weather Icon" class="icon">
+            <span class="icon-label">CupidWeather</span>
+        </div>
+        <div class="app-icon" onclick="openSweetTime()">
+            <img src="clock.png" alt="Clock Icon" class="icon">
+            <span class="icon-label">SweetTime</span>
         </div>
     </div>
 
     <div id="game-container" style="display: none;">
-        <div id="window-bar">
+        <div id="window-bar">            <button class="close-button" onclick="closeNubeMail()">×</button>
             <div class="bars">
                 <span></span>
                 <span></span>
@@ -63,6 +76,86 @@
             <p>Hecho con ❤️ por Emergencias112</p>
         </footer>
     </div>
+
+    <div id="music-container" style="display: none;">
+        <div id="window-bar">            <button class="close-button" onclick="closeMusicRoll()">×</button>
+            <div class="bars">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <div class="window-title">MusicRoll</div>
+        </div>
+        <div class="music-player">
+            <img src="nota-musica.gif" alt="Music Icon" class="music-icon">
+            <div class="music-info">
+                <div class="song-title">Reproduciendo:<br><br><b>stream cafe - boba date</b></div>
+                <div class="progress-bar">
+                    <div class="progress"></div>
+                </div>
+                <div class="time-info">
+                    <span id="current-time">00:00</span>
+                    <span id="total-time">00:00</span>
+                </div>
+                <button id="play-pause-btn" onclick="togglePlay()">⏸</button>
+            </div>        </div>
+    </div>    <div id="weather-container" style="display: none;">
+        <div id="window-bar">
+            <button class="close-button" onclick="closeWeather()">×</button>
+            <div class="bars">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <div class="window-title">CupidWeather</div>
+        </div>
+        <div class="weather-content">
+            <div class="weather-card today">
+                <h2>Hoy</h2>
+                <img src="kiss.png" alt="Today's Weather" class="weather-icon">
+                <div class="forecast">Día de besitos</div>
+                <div class="weather-details">Probabilidad de mimos: 100%</div>
+            </div>
+            <div class="weather-card tomorrow">
+                <h2>Mañana</h2>
+                <img src="sleep.png" alt="Tomorrow's Weather" class="weather-icon">
+                <div class="forecast">Día de sueñecito</div>
+                <div class="weather-details">Xucuxú esperado: Máximo</div>
+            </div>
+        </div>
+    </div>    <div id="sweettime-container" style="display: none;">
+        <div id="window-bar">
+            <button class="close-button" onclick="closeSweetTime()">×</button>
+            <div class="bars">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <div class="window-title">SweetTime</div>
+        </div>
+        <div class="time-content">
+            <img src="sandclock.gif" alt="Sand Clock" class="sand-clock">
+            <div class="digital-time"></div>
+            <div class="sweet-message"></div>
+        </div>
+    </div>
+
+    <div id="lovenote-container" style="display: none;">
+        <div id="window-bar">
+            <button class="close-button" onclick="closeLoveNote()">×</button>
+            <div class="bars">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <div class="window-title">LoveLetter</div>
+        </div>
+        <div class="note-content">
+            <textarea id="note-text" placeholder="Escribe aquí tus pensamientos..."></textarea>
+        </div>
+    </div>
+
+    <script src="window-manager.js"></script>
     <script src="script.js"></script>
     <script src="game.js"></script>
     <script>
@@ -110,6 +203,120 @@
         function closeNubeMail() {
             const gameContainer = document.getElementById('game-container');
             gameContainer.style.display = 'none';
+        }
+
+        function openLoveNote() {
+            const noteContainer = document.getElementById('lovenote-container');
+            const retroBar = document.getElementById('retro-bar');
+            noteContainer.style.display = 'block';
+            
+            // Calcular posición inicial
+            const retroBarHeight = retroBar.offsetHeight;
+            const padding = 20; // Espacio desde la barra superior
+            
+            noteContainer.style.top = (retroBarHeight + padding) + 'px';
+            
+            // Centrar horizontalmente sin usar transform
+            const windowWidth = window.innerWidth;
+            const containerWidth = noteContainer.offsetWidth;
+            noteContainer.style.left = Math.max(0, (windowWidth - containerWidth) / 2) + 'px';
+            
+            // Cargar el contenido guardado
+            const savedContent = localStorage.getItem('loveNoteContent');
+            if (savedContent) {
+                document.getElementById('note-text').value = savedContent;
+            }
+            
+            // Poner el foco en el textarea
+            setTimeout(() => {
+                document.getElementById('note-text').focus();
+            }, 100);
+        }
+
+        function closeLoveNote() {
+            const noteContainer = document.getElementById('lovenote-container');
+            noteContainer.style.display = 'none';
+            
+            // Guardar el contenido actual
+            const currentContent = document.getElementById('note-text').value;
+            localStorage.setItem('loveNoteContent', currentContent);
+        }        // Guardar automáticamente mientras se escribe
+        document.addEventListener('DOMContentLoaded', () => {
+            const noteText = document.getElementById('note-text');
+            noteText.addEventListener('input', () => {
+                localStorage.setItem('loveNoteContent', noteText.value);
+            });
+        });
+
+        function openWeather() {
+            const weatherContainer = document.getElementById('weather-container');
+            const retroBar = document.getElementById('retro-bar');
+            weatherContainer.style.display = 'block';
+            
+            // Calcular posición inicial
+            const retroBarHeight = retroBar.offsetHeight;
+            const padding = 20;
+            
+            weatherContainer.style.top = (retroBarHeight + padding) + 'px';
+            
+            // Centrar horizontalmente sin usar transform
+            const windowWidth = window.innerWidth;
+            const containerWidth = weatherContainer.offsetWidth;
+            weatherContainer.style.left = Math.max(0, (windowWidth - containerWidth) / 2) + 'px';
+        }        function closeWeather() {
+            const weatherContainer = document.getElementById('weather-container');
+            weatherContainer.style.display = 'none';
+        }
+
+        function openSweetTime() {
+            const sweetTimeContainer = document.getElementById('sweettime-container');
+            const retroBar = document.getElementById('retro-bar');
+            sweetTimeContainer.style.display = 'block';
+            
+            // Calcular posición inicial
+            const retroBarHeight = retroBar.offsetHeight;
+            const padding = 20;
+            
+            sweetTimeContainer.style.top = (retroBarHeight + padding) + 'px';
+            
+            // Centrar horizontalmente sin usar transform
+            const windowWidth = window.innerWidth;
+            const containerWidth = sweetTimeContainer.offsetWidth;
+            sweetTimeContainer.style.left = Math.max(0, (windowWidth - containerWidth) / 2) + 'px';
+
+            updateSweetTime();
+        }
+
+        function closeSweetTime() {
+            const sweetTimeContainer = document.getElementById('sweettime-container');
+            sweetTimeContainer.style.display = 'none';
+        }
+
+        function updateSweetTime() {
+            const now = new Date();
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const timeString = `${hours}:${minutes}`;
+            
+            const messages = [
+                "¡Es hora de darse mimitos!",
+                "¡Es hora de pensar en ti!",
+                "¡Es hora de sonreír!",
+                "¡Es hora de un abrazito!",
+                "¡Es hora de cariñitos!",
+                "¡Es hora de estar juntitas!"
+            ];
+            
+            const digitalTime = document.querySelector('.digital-time');
+            const sweetMessage = document.querySelector('.sweet-message');
+            
+            digitalTime.textContent = timeString;
+            const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+            sweetMessage.textContent = randomMessage;
+            
+            if (sweetTimeContainer.style.display !== 'none') {
+                setTimeout(updateSweetTime, 60000); // Actualizar cada minuto
+            }
         }
     </script>
 </body>
