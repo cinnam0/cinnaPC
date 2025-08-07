@@ -9,7 +9,39 @@
 <body>
     <audio id="background-audio" src="audio.mp3" autoplay loop></audio>
     
-    <div id="retro-bar">
+    <!-- Pantalla de inicio de sesión -->
+    <div id="login-screen">
+        <div class="login-container">
+            <div class="login-header">
+                <h1>✨ CinnaPC ✨</h1>
+            </div>
+            
+            <div class="profile-section">
+                <div class="profile-picture">
+                    <img src="cinna-profile.png" alt="Profile Picture" class="profile-img">
+                </div>
+                <h2>AnaGDCP231</h2>
+                <p class="welcome-text">¡Bienvenida de vuelta! 💕</p>
+            </div>
+            
+            <div class="login-form">
+                <button onclick="login()" class="login-button">
+                    <span>ENTRAR</span>
+                    <div class="button-decoration">→</div>
+                </button>
+            </div>
+            
+            <div class="login-footer">
+                <div class="kawaii-elements">
+                    <span class="floating-heart">💖</span>
+                    <span class="floating-star">⭐</span>
+                    <span class="floating-cloud">☁️</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="retro-bar" style="display: none;">
         <span id="app-name">CinnaPC</span>
         <div class="right-section">
             <button id="fullscreen-button" onclick="toggleFullscreen()"></button>
@@ -18,32 +50,57 @@
         </div>
     </div>
 
-    <div id="desktop">
-        <div class="app-icon" onclick="showTrashMessage()">
+    <div id="desktop" style="display: none;">
+        <div class="app-icon" data-app="trash">
             <img src="trash-bin.png" alt="Trash Bin Icon" class="icon">
             <span class="icon-label">Papelera</span>
         </div>
-        <div class="app-icon" onclick="openNubeMail()">
+        <div class="app-icon" data-app="nubemail">
             <img src="mail.png" alt="NubeMail Icon" class="icon">
             <span class="icon-label">NubeMail</span>
-        </div>        <div class="app-icon" onclick="openMusicRoll()">
+        </div>        <div class="app-icon" data-app="musicroll">
             <img src="music.png" alt="MusicRoll Icon" class="icon">
             <span class="icon-label">MusicRoll</span>
-        </div>        <div class="app-icon" onclick="openLoveNote()">
+        </div>        <div class="app-icon" data-app="lovenote">
             <img src="notepad.png" alt="LoveNote Icon" class="icon">
             <span class="icon-label">LoveLetter</span>
-        </div>        <div class="app-icon" onclick="openWeather()">
+        </div>        <div class="app-icon" data-app="weather">
             <img src="rainbow.png" alt="Weather Icon" class="icon">
             <span class="icon-label">CupidWeather</span>
         </div>
-        <div class="app-icon" onclick="openSweetTime()">
+        <div class="app-icon" data-app="sweettime">
             <img src="clock.png" alt="Clock Icon" class="icon">
             <span class="icon-label">SweetTime</span>
         </div>
     </div>
 
+    <div id="email-selection-container" style="display: none;">
+        <div id="window-bar">
+            <button class="close-button" onclick="closeNubeMail()">×</button>
+            <div class="bars">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <div class="window-title">NubeMail</div>
+        </div>
+        <div class="email-list">
+            <h1>Bandeja de entrada</h1>
+            <div class="email-item" onclick="openExistingEmail()">
+                <div class="email-sender">De: Emergencias112</div>
+                <div class="email-subject">¡Tienes 1 nuevo correo!</div>
+                <div class="email-preview">...Cinnamoroll estaba disfrutando de un tranquilo día volando entre nubes...</div>
+            </div>
+            <div class="email-item new-adventure" onclick="openNewAdventure()">
+                <div class="email-sender">De: Hello Kitty</div>
+                <div class="email-subject">¡Una nueva aventura nos espera!</div>
+                <div class="email-preview">Una misteriosa aventura te aguarda...</div>
+            </div>
+        </div>
+    </div>
+
     <div id="game-container" style="display: none;">
-        <div id="window-bar">            <button class="close-button" onclick="closeNubeMail()">×</button>
+        <div id="window-bar">            <button class="close-button" onclick="backToEmailSelection()">×</button>
             <div class="bars">
                 <span></span>
                 <span></span>
@@ -75,6 +132,51 @@
         <footer id="footer" style="display: none;">
             <p>Hecho con ❤️ por Emergencias112</p>
         </footer>
+    </div>
+
+    <div id="new-adventure-container" style="display: none;">
+        <div id="window-bar">
+            <button class="close-button" onclick="backToEmailSelection()">×</button>
+            <div class="bars">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <div class="window-title">NubeMail</div>
+        </div>
+        <header>
+            <h1>¡Una nueva aventura nos espera!</h1>
+        </header>
+        <main>
+            <section style="margin-left: 3%; margin-right: 3%; line-height: 1.5;" id="adventure-step-1" class="adventure-step active">
+                <h2>¡Hora de la aventura!</h2>
+                <p style="text-align: justify;">Cinnamoroll ha recibido una carta urgente de Hello Kitty: "¡Necesito tu ayuda! My Melody, Kuromi, Pompompurin y yo hemos decidido hacer el viaje más increíble de nuestras vidas hacia <b>Granada</b>, pero el camino está lleno de desafíos que solo podemos superar trabajando juntas".<br><br>Con su cola esponjosa ondeando al viento y sus ojos brillantes de emoción, Cinnamoroll se monta en su avión y se prepara para la gran aventura. Pero no será fácil: tendrá que esquivar los obstáculos que Renfe le ha colocado por el camino. ¿Podrá llegar a su destino?</p>
+                <button onclick="startNewAdventure()">¡Empezar la aventura!</button>
+            </section>
+            <section id="adventure-step-2" class="adventure-step">
+                <h2>¡Vuela con Cinnamoroll!</h2>
+                <p>Ayuda a Cinnamoroll a volar entre las tuberías sin chocar. ¡Presiona espacio para volar!</p>
+                <div id="flappy-game-container">
+                    <canvas id="flappyCanvas" width="600" height="400"></canvas>
+                    <div id="game-instructions">
+                        <p>🎮 Presiona ESPACIO para volar</p>
+                        <p>⏱️ Tienes que sobrevivir para continuar</p>
+                    </div>
+                    <button id="start-flappy-btn" onclick="startFlappyGame()">¡Comenzar vuelo!</button>
+                    <button id="next-adventure-btn" style="display: none;" onclick="completeAdventure()">¡Misión completada!</button>
+                </div>
+            </section>
+            <section id="adventure-step-3" class="adventure-step">
+                <h2>¡Aventura completada!</h2>
+                <p style="line-height: 1.6;">¡Increíble! Cinnamoroll ha logrado volar exitosamente entre las nubes y ha llegado a Granada.</p>
+                <div style="display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 30px; margin: 30px 0;">
+                    <img src="travel.png" alt="Travel" style="width: 150px; height: 150px; image-rendering: pixelated;">
+                    <img src="renfe-pixel.png" alt="Renfe" style="width: 180px; height: 150px; image-rendering: pixelated;">
+                </div>
+                <p style="line-height: 1.6;">La gran aventura continúa este sábado... ¡Prepárate para el viaje más emocionante!</p>
+                <button onclick="backToEmailSelection()">Volver a la bandeja</button>
+            </section>
+        </main>
     </div>
 
     <div id="music-container" style="display: none;">
@@ -158,166 +260,6 @@
     <script src="window-manager.js"></script>
     <script src="script.js"></script>
     <script src="game.js"></script>
-    <script>
-        function openNubeMail() {
-            const gameContainer = document.getElementById('game-container');
-            gameContainer.style.display = 'block';
-        }
-
-        function showFinalMessage() {
-            const step3 = document.getElementById("step-3");
-
-            // Elimina los botones y el texto anterior
-            step3.innerHTML = `
-                <h2>¡SÍÍÍÍ!</h2>
-                <p style="line-height: 1.6;">Prepárate para pasártelo súper bien (conmigo) (tu novio)</p>
-                <img src="final.gif" alt="Celebración final" style="max-width: 35%; height: auto;">
-                <p style="line-height: 1.6;">Al hacer clic en "Sí", usted ha ingresado en un compromiso 100% serio, legal e irrevocable con el remitente de esta solicitud.<br>
-                Este acuerdo no admite devoluciones. Cualquier intento de retroceso será automáticamente redirigido a un tribunal de guerra y debidamente penado.<br><br>
-                O no.</p>
-            `;
-
-            // Muestra el footer
-            document.getElementById("footer").style.display = "block";
-        }
-
-        function showTrashMessage() {
-            const message = document.createElement('div');
-            message.textContent = 'La papelera está vacía';
-            message.style.position = 'fixed';
-            message.style.top = `${event.clientY}px`;
-            message.style.left = `${event.clientX}px`;
-            message.style.backgroundColor = '#000';
-            message.style.color = '#fff';
-            message.style.padding = '5px 10px';
-            message.style.borderRadius = '5px';
-            message.style.fontSize = '12px';
-            message.style.zIndex = '1000';
-            document.body.appendChild(message);
-
-            setTimeout(() => {
-                document.body.removeChild(message);
-            }, 2000);
-        }
-
-        function closeNubeMail() {
-            const gameContainer = document.getElementById('game-container');
-            gameContainer.style.display = 'none';
-        }
-
-        function openLoveNote() {
-            const noteContainer = document.getElementById('lovenote-container');
-            const retroBar = document.getElementById('retro-bar');
-            noteContainer.style.display = 'block';
-            
-            // Calcular posición inicial
-            const retroBarHeight = retroBar.offsetHeight;
-            const padding = 20; // Espacio desde la barra superior
-            
-            noteContainer.style.top = (retroBarHeight + padding) + 'px';
-            
-            // Centrar horizontalmente sin usar transform
-            const windowWidth = window.innerWidth;
-            const containerWidth = noteContainer.offsetWidth;
-            noteContainer.style.left = Math.max(0, (windowWidth - containerWidth) / 2) + 'px';
-            
-            // Cargar el contenido guardado
-            const savedContent = localStorage.getItem('loveNoteContent');
-            if (savedContent) {
-                document.getElementById('note-text').value = savedContent;
-            }
-            
-            // Poner el foco en el textarea
-            setTimeout(() => {
-                document.getElementById('note-text').focus();
-            }, 100);
-        }
-
-        function closeLoveNote() {
-            const noteContainer = document.getElementById('lovenote-container');
-            noteContainer.style.display = 'none';
-            
-            // Guardar el contenido actual
-            const currentContent = document.getElementById('note-text').value;
-            localStorage.setItem('loveNoteContent', currentContent);
-        }        // Guardar automáticamente mientras se escribe
-        document.addEventListener('DOMContentLoaded', () => {
-            const noteText = document.getElementById('note-text');
-            noteText.addEventListener('input', () => {
-                localStorage.setItem('loveNoteContent', noteText.value);
-            });
-        });
-
-        function openWeather() {
-            const weatherContainer = document.getElementById('weather-container');
-            const retroBar = document.getElementById('retro-bar');
-            weatherContainer.style.display = 'block';
-            
-            // Calcular posición inicial
-            const retroBarHeight = retroBar.offsetHeight;
-            const padding = 20;
-            
-            weatherContainer.style.top = (retroBarHeight + padding) + 'px';
-            
-            // Centrar horizontalmente sin usar transform
-            const windowWidth = window.innerWidth;
-            const containerWidth = weatherContainer.offsetWidth;
-            weatherContainer.style.left = Math.max(0, (windowWidth - containerWidth) / 2) + 'px';
-        }        function closeWeather() {
-            const weatherContainer = document.getElementById('weather-container');
-            weatherContainer.style.display = 'none';
-        }
-
-        function openSweetTime() {
-            const sweetTimeContainer = document.getElementById('sweettime-container');
-            const retroBar = document.getElementById('retro-bar');
-            sweetTimeContainer.style.display = 'block';
-            
-            // Calcular posición inicial
-            const retroBarHeight = retroBar.offsetHeight;
-            const padding = 20;
-            
-            sweetTimeContainer.style.top = (retroBarHeight + padding) + 'px';
-            
-            // Centrar horizontalmente sin usar transform
-            const windowWidth = window.innerWidth;
-            const containerWidth = sweetTimeContainer.offsetWidth;
-            sweetTimeContainer.style.left = Math.max(0, (windowWidth - containerWidth) / 2) + 'px';
-
-            updateSweetTime();
-        }
-
-        function closeSweetTime() {
-            const sweetTimeContainer = document.getElementById('sweettime-container');
-            sweetTimeContainer.style.display = 'none';
-        }
-
-        function updateSweetTime() {
-            const now = new Date();
-            const hours = now.getHours().toString().padStart(2, '0');
-            const minutes = now.getMinutes().toString().padStart(2, '0');
-            const timeString = `${hours}:${minutes}`;
-            
-            const messages = [
-                "¡Es hora de darse mimitos!",
-                "¡Es hora de pensar en ti!",
-                "¡Es hora de sonreír!",
-                "¡Es hora de un abrazito!",
-                "¡Es hora de cariñitos!",
-                "¡Es hora de estar juntitas!"
-            ];
-            
-            const digitalTime = document.querySelector('.digital-time');
-            const sweetMessage = document.querySelector('.sweet-message');
-            
-            digitalTime.textContent = timeString;
-            const randomMessage = messages[Math.floor(Math.random() * messages.length)];
-            sweetMessage.textContent = randomMessage;
-            
-            if (sweetTimeContainer.style.display !== 'none') {
-                setTimeout(updateSweetTime, 60000); // Actualizar cada minuto
-            }
-        }
-    </script>
+    <script src="flappy-game.js"></script>
 </body>
 </html>

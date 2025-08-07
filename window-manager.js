@@ -47,14 +47,22 @@ function setupWindowDragging(windowElement, handleElement) {
 
 // Initialize window management
 document.addEventListener('DOMContentLoaded', () => {
+    const emailSelectionContainer = document.getElementById('email-selection-container');
     const gameContainer = document.getElementById('game-container');
+    const newAdventureContainer = document.getElementById('new-adventure-container');
     const musicContainer = document.getElementById('music-container');
     const loveNoteContainer = document.getElementById('lovenote-container');
     const weatherContainer = document.getElementById('weather-container');
     const sweetTimeContainer = document.getElementById('sweettime-container');
 
+    if (emailSelectionContainer) {
+        setupWindowDragging(emailSelectionContainer, emailSelectionContainer.querySelector('#window-bar'));
+    }
     if (gameContainer) {
         setupWindowDragging(gameContainer, gameContainer.querySelector('#window-bar'));
+    }
+    if (newAdventureContainer) {
+        setupWindowDragging(newAdventureContainer, newAdventureContainer.querySelector('#window-bar'));
     }
     if (musicContainer) {
         setupWindowDragging(musicContainer, musicContainer.querySelector('#window-bar'));
