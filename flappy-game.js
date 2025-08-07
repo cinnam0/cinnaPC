@@ -434,7 +434,7 @@ class FlappyGame {
         
         document.getElementById('start-flappy-btn').style.display = 'block';
         document.getElementById('start-flappy-btn').textContent = '¡Intentar de nuevo!';
-        document.getElementById('game-instructions').innerHTML = '<p style="color: #ff69b4;">¡Oops! Cinnamoroll chocó con una nube. ¡Inténtalo otra vez!</p>';
+        document.getElementById('game-instructions').innerHTML = '<p style="color: #ff69b4;">¡Oops! Cinnamoroll chocó con una tubería. ¡Inténtalo otra vez!</p>';
     }
     
     completeGame() {
@@ -476,3 +476,4 @@ function completeAdventure() {
     document.getElementById('adventure-step-2').classList.remove('active');
     document.getElementById('adventure-step-3').classList.add('active');
 }
+
