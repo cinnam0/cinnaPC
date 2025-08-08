@@ -817,7 +817,7 @@ footer {
     border-radius: 0;
     box-shadow: 10px 10px 0px #ffb6c1;
     width: 600px;
-    height: 400px;
+    height: 440px;
     border: 2px solid #ff69b4;
     padding: 0;
     position: fixed;
@@ -825,56 +825,41 @@ footer {
     cursor: grab;
 }
 
-.weather-content {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    padding: 20px;
-    height: calc(100% - 70px);
-    background: linear-gradient(135deg, #fff9fb 0%, #ffe6ee 100%);
-    user-select: none;
-}
+/* CupidWeather Enhanced */
+.weather-content { display:flex; flex-direction:column; gap:14px; padding:14px 16px 18px; height:calc(100% - 70px); background:linear-gradient(135deg,#fff9fb 0%,#ffe6ee 100%); position:relative; overflow:hidden; }
+.weather-content:before { content:''; position:absolute; inset:6px; border:1px dashed rgba(255,105,180,0.35); pointer-events:none; }
 
-.weather-card {
-    background: white;
-    padding: 20px;
-    border: 2px solid #ff69b4;
-    box-shadow: 5px 5px 0px #ffb6c1;
-    width: 45%;
-    transition: transform 0.3s ease;
-}
+.weather-metrics { display:grid; grid-template-columns: repeat(3,1fr); gap:10px; }
+.metric-box { background:#fff; border:2px solid #ff69b4; box-shadow:3px 3px 0 #ffb6c1; padding:6px 4px 10px; position:relative; overflow:hidden; }
+.metric-box:before { content:''; position:absolute; inset:3px; border:1px solid rgba(255,182,193,0.25); pointer-events:none; }
+.metric-label { font-size:8px; color:#ff9ac6; margin-bottom:6px; letter-spacing:0.5px; }
+.metric-value { font-size:18px; color:#ff1493; text-shadow:2px 2px 0 #ffd5e6; animation: popMetric 0.6s ease; }
+@keyframes popMetric { 0% { transform:scale(0.6); opacity:0;} 60% { transform:scale(1.15); opacity:1;} 100% { transform:scale(1); } }
 
-.weather-card:hover {
-    transform: translateY(-5px);
-}
+.forecast-strip-wrapper { flex:1; border:2px solid #ff69b4; box-shadow:5px 5px 0 #ffb6c1; background:#fff; padding:8px 6px 6px; position:relative; overflow:hidden; }
+.forecast-strip-wrapper:before { content:'PRONÓSTICO AMOROSO'; position:absolute; top:-9px; left:10px; background:#ff69b4; color:#fff; font-size:8px; padding:2px 6px; letter-spacing:1px; box-shadow:2px 2px 0 #ffb6c1; }
+.forecast-strip { display:flex; gap:12px; height:100%; align-items:stretch; animation: slideForecast 38s linear infinite; }
+@keyframes slideForecast { 0% { transform:translateX(0);} 100% { transform:translateX(-50%);} }
+.forecast-item { min-width:110px; background:linear-gradient(180deg,#fffafc,#ffeefa); border:2px solid #ff69b4; box-shadow:3px 3px 0 #ffb6c1; padding:6px 4px 8px; display:flex; flex-direction:column; align-items:center; justify-content:space-between; position:relative; font-size:8px; letter-spacing:0.5px; }
+.forecast-item:before { content:''; position:absolute; inset:3px; border:1px dashed rgba(255,105,180,0.3); pointer-events:none; }
+.forecast-time { font-size:8px; color:#ff1493; margin-bottom:4px; }
+.forecast-emoji { font-size:28px; filter: drop-shadow(1px 1px 0 #ffb6c1); animation: floatEmoji 4s ease-in-out infinite; }
+@keyframes floatEmoji { 0%,100% { transform:translateY(0);} 50% { transform:translateY(-6px);} }
+.forecast-desc { font-size:8px; color:#ff69b4; margin-top:4px; text-align:center; line-height:1.2; }
+.forecast-chance { font-size:8px; color:#ff9ac6; margin-top:2px; }
 
-.weather-card h2 {
-    font-family: 'Press Start 2P', cursive;
-    color: #ff69b4;
-    font-size: 1.2em;
-    margin-bottom: 20px;
-}
+.weather-today-banner { background:#ff69b4; color:#fff; font-size:10px; letter-spacing:1px; padding:4px 8px; text-align:center; border:2px solid #ff1493; box-shadow:3px 3px 0 #ffb6c1; margin-bottom:4px; text-shadow:1px 1px 0 #ff1493; }
 
-.weather-icon {
-    width: 120px;
-    height: 120px;
-    margin: 15px 0;
-}
+.cupid-mode-real .forecast-item { background:linear-gradient(180deg,#f0f8ff,#e0f2ff); }
+.cupid-mode-real .forecast-emoji { filter:none; }
+.cupid-mode-real .forecast-strip-wrapper:before { content:'PRONÓSTICO REAL'; background:#1493ff; box-shadow:2px 2px 0 #87c8ff; }
+.cupid-mode-real .metric-box { border-color:#1493ff; box-shadow:3px 3px 0 #87c8ff; }
+.cupid-mode-real .metric-value { color:#005a9e; text-shadow:2px 2px 0 #b6e0ff; }
+.cupid-mode-real .metric-label { color:#4da4d6; }
 
-.forecast {
-    font-family: 'Press Start 2P', cursive;
-    color: #ff69b4;
-    font-size: 0.9em;
-    margin: 15px 0;
-}
-
-.weather-details {
-    font-family: 'Press Start 2P', cursive;
-    color: #ffb6c1;
-    font-size: 0.7em;
-    line-height: 1.5;
-    margin-top: 15px;
-}
+/* Heart particles */
+.weather-content .heart-particle { position:absolute; font-size:14px; animation: riseHeart 6s linear forwards; opacity:0; }
+@keyframes riseHeart { 0% { transform:translateY(0) scale(0.6); opacity:0;} 10% { opacity:1;} 90% { opacity:1;} 100% { transform:translateY(-160px) scale(1); opacity:0;} }
 
 #sweettime-container {
     text-align: center;

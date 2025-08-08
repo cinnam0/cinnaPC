@@ -223,17 +223,23 @@
             <div class="window-title">CupidWeather</div>
         </div>
         <div class="weather-content">
-            <div class="weather-card today">
-                <h2>Hoy</h2>
-                <img src="kiss.png" alt="Today's Weather" class="weather-icon">
-                <div class="forecast">Día de besitos</div>
-                <div class="weather-details">Probabilidad de mimos: 100%</div>
+            <div class="weather-today-banner" id="cupid-today-banner" aria-live="polite"></div>
+            <div class="weather-metrics">
+                <div class="metric-box love-index">
+                    <div class="metric-label">Love Index</div>
+                    <div class="metric-value" id="love-index">--</div>
+                </div>
+                <div class="metric-box abrazo-uv">
+                    <div class="metric-label">Abrazo UV</div>
+                    <div class="metric-value" id="abrazo-uv">--</div>
+                </div>
+                <div class="metric-box cuddle-alert">
+                    <div class="metric-label">Alerta Mimos</div>
+                    <div class="metric-value" id="cuddle-alert">--</div>
+                </div>
             </div>
-            <div class="weather-card tomorrow">
-                <h2>Mañana</h2>
-                <img src="sleep.png" alt="Tomorrow's Weather" class="weather-icon">
-                <div class="forecast">Día de sueñecito</div>
-                <div class="weather-details">Xucuxú esperado: Máximo</div>
+            <div class="forecast-strip-wrapper">
+                <div class="forecast-strip" id="cupid-forecast-list" aria-live="polite"></div>
             </div>
         </div>
     </div>    <div id="sweettime-container" style="display: none;">

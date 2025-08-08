@@ -36,8 +36,8 @@
         'game-container': {},
         'new-adventure-container': {},
         'music-container': { onOpen: () => updateMusicProgress() },
-        'lovenote-container': { onOpen: restoreLoveNote, onClose: persistLoveNote },
-        'weather-container': {},
+    'lovenote-container': { onOpen: restoreLoveNote, onClose: persistLoveNote },
+    'weather-container': { onOpen: () => { if (!byId('cupid-forecast-list')) return; if (!byId('cupid-forecast-list').children.length) { renderCupidForecast(); } else { updateCupidDateBanner?.(); } } },
         'sweettime-container': { onOpen: startSweetTime, onClose: stopSweetTime },
     'lovestats-container': { onOpen: startLoveStats, onClose: stopLoveStats },
     'snake-adventure-container': {}
@@ -286,6 +286,159 @@
         if (audio.paused) { audio.play(); btn.textContent = '⏸'; } else { audio.pause(); btn.textContent = '▶'; }
     }
 
+    // --- CupidWeather ---
+    let cupidModeReal = false; // fijo kawaii
+    let cupidAutoRefreshTimer = null;
+    let cupidCached = { mode:false, timestamp:0, data:[] };
+
+    function cupidRandom(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+    function generateKawaiiForecastBlock(startDate=new Date()) {
+        // 8 bloques de 3h = 24h
+        const blocks = [];
+        const moods = [
+            { emoji:'💋', desc:'Besitos de cariñito', chance:[85,100] },
+            { emoji:'🤗', desc:'Oleada de abrazitos', chance:[70,95] },
+            { emoji:'🌸', desc:'Florecillas románticas', chance:[60,90] },
+            { emoji:'😴', desc:'Súper siesta', chance:[50,80] },
+            { emoji:'🍰', desc:'Antojo de fuet', chance:[55,85] },
+            { emoji:'💌', desc:'Mensajes amorosos', chance:[65,92] },
+            { emoji:'✨', desc:'Tormenta de amor', chance:[75,98] },
+            { emoji:'☁️', desc:'Nubes de algodoncito', chance:[40,70] },
+            { emoji:'💞', desc:'Lluvia rositas', chance:[80,100] }
+        ];
+        for(let i=0;i<8;i++) {
+            const d = new Date(startDate.getTime() + i*3*3600000);
+            const hour = d.getHours().toString().padStart(2,'0')+':00';
+            const mood = cupidRandom(moods);
+            const ch = Math.floor(Math.random()*(mood.chance[1]-mood.chance[0]+1))+mood.chance[0];
+            blocks.push({ time: hour, emoji: mood.emoji, desc: mood.desc, chance: ch+'%' });
+        }
+        return blocks;
+    }
+    function generateRealishForecastBlock(startDate=new Date()) {
+        const baseTemps = [18,19,20,21,22,23,24,22];
+        const phenomena = [
+            { emoji:'☀️', desc:'Despejado' },
+            { emoji:'🌤️', desc:'Parcial nubes' },
+            { emoji:'⛅', desc:'Intervalos' },
+            { emoji:'🌦️', desc:'Chubascos aisl.' },
+            { emoji:'🌧️', desc:'Lluvia suave' }
+        ];
+        return baseTemps.map((t,i)=>{
+            const d = new Date(startDate.getTime()+ i*3*3600000);
+            const hour = d.getHours().toString().padStart(2,'0')+':00';
+            const ph = cupidRandom(phenomena);
+            const prob = ph.emoji==='🌧️'||ph.emoji==='🌦️'? (40+Math.floor(Math.random()*40)) : Math.floor(Math.random()*30);
+            return { time: hour, emoji: ph.emoji, desc: ph.desc+` ${t}ºC`, chance: prob+'%' };
+        });
+    }
+    function renderCupidForecast() {
+        const list = byId('cupid-forecast-list');
+        if(!list) return;
+        const now = new Date();
+        // Simple cache 10 min per mode
+    if (cupidCached.mode===cupidModeReal && (now - cupidCached.timestamp) < 10*60000 && cupidCached.data.length) {
+            // reuse
+        } else {
+            cupidCached = {
+                mode: cupidModeReal,
+                timestamp: now,
+                data: (cupidModeReal? generateRealishForecastBlock(now) : generateKawaiiForecastBlock(now))
+            };
+        }
+        list.innerHTML='';
+        const data = cupidCached.data;
+        // duplicar para scroll infinito
+        const doubled = data.concat(data);
+        doubled.forEach(item=>{
+            const wrap = document.createElement('div');
+            wrap.className='forecast-item';
+            wrap.setAttribute('role','group');
+            wrap.setAttribute('aria-label', `${item.time} ${item.desc} prob ${item.chance}`);
+            const t = document.createElement('div'); t.className='forecast-time'; t.textContent=item.time;
+            const e = document.createElement('div'); e.className='forecast-emoji'; e.textContent=item.emoji;
+            const dsc = document.createElement('div'); dsc.className='forecast-desc'; dsc.textContent=item.desc;
+            const ch = document.createElement('div'); ch.className='forecast-chance'; ch.textContent=item.chance;
+            wrap.append(t,e,dsc,ch);
+            list.appendChild(wrap);
+        });
+        updateCupidMetrics();
+        spawnHearts(6);
+        const container = byId('weather-container');
+        if(container) {
+            container.classList.toggle('cupid-mode-real', cupidModeReal);
+            applyTimeOfDayTheme(container);
+        }
+    // Banner fecha
+    updateCupidDateBanner();
+    manageAutoRefresh();
+    }
+    function updateCupidMetrics() {
+        const loveIndex = (85 + Math.floor(Math.random()*15));
+        const abrazoUV = (5 + Math.floor(Math.random()*8));
+        const cuddleAlert = ['MOD','ALTO','MÁX'][Math.floor(Math.random()*3)]; // nunca BAJO
+        byId('love-index') && (byId('love-index').textContent = loveIndex);
+        byId('abrazo-uv') && (byId('abrazo-uv').textContent = abrazoUV);
+        byId('cuddle-alert') && (byId('cuddle-alert').textContent = cuddleAlert);
+    }
+    function refreshCupidWeather() { renderCupidForecast(); }
+    function toggleCupidMode() { /* deshabilitado: siempre kawaii */ }
+    function updateCupidDateBanner() {
+        const banner = byId('cupid-today-banner');
+        if(!banner) return;
+        const now = new Date();
+        const dias = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+        const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+        banner.textContent = `${dias[now.getDay()]} ${now.getDate()} de ${meses[now.getMonth()]} · Pronóstico Amoroso`;    }
+    function spawnHearts(n=4) {
+        const container = document.querySelector('#weather-container .weather-content');
+        if(!container) return;
+        for(let i=0;i<n;i++) {
+            const h = document.createElement('div');
+            h.className='heart-particle';
+            h.textContent = cupidRandom(['💖','💗','💓','💞','💕']);
+            h.style.left = Math.random()*90 + '%';
+            h.style.bottom = '0px';
+            h.style.animationDelay = (Math.random()*2)+'s';
+            h.style.opacity = '0';
+            container.appendChild(h);
+            setTimeout(()=> h.remove(), 6000);
+        }
+    }
+
+    // Ensure weather loads first time window opens
+    const originalOpenWeather = openWeather;
+    let cupidWeatherInitialized = false;
+    window.openWeather = function() {
+        originalOpenWeather();
+        if(!cupidWeatherInitialized) {
+            cupidWeatherInitialized = true;
+            setTimeout(renderCupidForecast, 60);
+        }
+    };
+
+    function manageAutoRefresh() {
+        clearTimeout(cupidAutoRefreshTimer);
+    // auto refresh cada 5 min si la ventana abierta
+        const container = byId('weather-container');
+        if(container && container.style.display !== 'none') {
+            cupidAutoRefreshTimer = setTimeout(()=>{
+        refreshCupidWeather();
+            }, 5*60000);
+        }
+    }
+    // scroll nunca se pausa, animación por CSS (sin controles)
+    function applyTimeOfDayTheme(container) {
+        const hour = new Date().getHours();
+        let grad;
+        if(hour < 6) grad = 'linear-gradient(135deg,#1b1b3a,#392d60)';
+        else if(hour < 12) grad = 'linear-gradient(135deg,#fff9fb,#ffe6ee)';
+        else if(hour < 18) grad = 'linear-gradient(135deg,#ffe6ee,#ffd0e6)';
+        else grad = 'linear-gradient(135deg,#ffb6c1,#ff8fb4)';
+        const wc = container.querySelector('.weather-content');
+        if(wc) wc.style.background = grad;
+    }
+
     function updateMusicProgress() {
         const audio = byId('background-audio');
         const progress = qs('.progress');
@@ -477,6 +630,8 @@
         openLoveStats,
         closeLoveStats,
         togglePlay,
-        updateMusicProgress // usado al abrir music player
+    updateMusicProgress, // usado al abrir music player
+    refreshCupidWeather,
+    toggleCupidMode
     });
 })();
