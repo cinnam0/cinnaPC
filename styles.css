@@ -234,6 +234,47 @@ body::after {
     margin-bottom: 10px;
 }
 
+/* Snake Adventure Styles */
+#snake-adventure-container {
+    text-align: center;
+    background: #fff;
+    border-radius: 0;
+    box-shadow: 10px 10px 0px #ffb6c1;
+    width: 90%;
+    max-width: 730px;
+    height: auto;
+    border: 2px solid #ff69b4;
+    padding: 0;
+    margin-top: -20px;
+    position: fixed;
+    cursor: grab;
+    transform: none;
+    display: none;
+    padding-bottom: 1%;
+    z-index: 100;
+}
+
+#snake-adventure-container:active { cursor: grabbing; }
+
+.snake-step { display: none; }
+.snake-step.active { display: block; }
+
+#snake-game-wrapper { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+
+#snakeCanvas {
+    border: 3px solid #ff69b4;
+    border-radius: 10px;
+    image-rendering: pixelated;
+    background: linear-gradient(to bottom, #ffeef7, #ffd6ec);
+    box-shadow: 5px 5px 0px #ffb6c1;
+}
+
+#snake-ui { width: 100%; max-width: 480px; display:flex; flex-direction: column; gap: 6px; align-items: center; }
+.snake-stats { display:flex; gap: 14px; justify-content: center; font-size: 10px; color:#ff1493; flex-wrap:wrap; }
+.snake-instructions { font-size:10px; color:#666; }
+#snake-ui button { margin-top:4px; }
+
+
 #game-instructions {
     margin: 10px 0;
     text-align: center;
@@ -545,7 +586,10 @@ footer {
     position: fixed;
     cursor: grab;
     z-index: 100;/* Base z-index for windows */
-    transform: translateX(-50%);
+    /* Se elimina translateX(-50%) porque desfasaba la posición real y
+       provocaba que el cálculo de límites (offsetLeft) impidiera llegar
+       visualmente al borde derecho. El centrado inicial ya lo hace JS
+       (positionWindow). */
 }
 
 #music-container:active {
@@ -565,6 +609,14 @@ footer {
 .music-info {
     text-align: center;
 }
+
+/* Lo-Fi Visualiser */
+#visualizer-wrapper { border:2px solid #ff69b4; box-shadow:4px 4px 0 #ffb6c1; padding:6px 6px 10px; background:linear-gradient(135deg,#fff9fb,#ffe0ec); position:relative; margin-top:14px; }
+#visualizer-wrapper::before { content:''; position:absolute; inset:4px; border:1px dashed rgba(255,105,180,0.35); pointer-events:none; }
+#visualizer-bars, #visualizer-wave { display:block; width:100%; image-rendering:pixelated; }
+#visualizer-bars { background:#fff; margin-bottom:6px; border:1px solid #ffb6c1; }
+#visualizer-wave { background:#fff; border:1px solid #ffb6c1; }
+.visualizer-fallback { font-size:10px; color:#ff1493; padding:8px 0; }
 
 .song-title {
     font-size: 14px;
@@ -669,6 +721,45 @@ footer {
     z-index: 100;
     transition: box-shadow 0.3s ease, transform 0.1s ease;
 }
+
+/* LoveStats window */
+#lovestats-container {
+    text-align: center;
+    background: #fff;
+    border-radius: 0;
+    box-shadow: 10px 10px 0px #ffb6c1;
+    width: 430px;
+    min-height: 420px;
+    border: 2px solid #ff69b4;
+    padding: 0;
+    position: fixed;
+    z-index: 100;
+    cursor: grab;
+    display: none;
+}
+
+#lovestats-container:active { cursor: grabbing; }
+
+.lovestats-content { padding: 18px 20px 24px; font-family: 'Press Start 2P', cursive; color:#ff69b4; }
+.lovestats-heading { margin:6px 0 16px; font-size:15px; text-shadow:2px 2px 0 #ffb6c1; letter-spacing:1px; }
+.lovestats-gif { width:140px; height:auto; image-rendering:pixelated; margin:-4px 0 10px; filter:drop-shadow(2px 2px 0 #ffb6c1); }
+.lovestats-grid { display:grid; grid-template-columns: repeat(2, 1fr); gap:12px; margin-bottom:16px; }
+.stat-box { background:#fff; border:2px solid #ff69b4; box-shadow:4px 4px 0 #ffb6c1; padding:10px 6px 12px; position:relative; }
+.stat-box:before { content:''; position:absolute; inset:3px; border:1px dashed rgba(255,105,180,0.4); pointer-events:none; }
+.stat-label { font-size:9px; color:#ff9ac6; margin-bottom:6px; }
+.stat-value { font-size:20px; color:#ff1493; text-shadow:2px 2px 0 #ffd5e6; }
+.lovestats-progress-wrapper { margin:2px 0 14px; text-align:left; }
+.progress-label { font-size:9px; color:#ff9ac6; margin:0 0 4px 2px; }
+.lovestats-progress-bar { width:100%; height:14px; background:#ffe6f1; border:2px solid #ff69b4; box-shadow:3px 3px 0 #ffb6c1; position:relative; overflow:hidden; }
+.lovestats-progress-fill { height:100%; width:0%; background:linear-gradient(90deg,#ff69b4,#ff1493); box-shadow:inset 0 0 0 2px rgba(255,255,255,0.35); transition: width 0.6s ease; position:relative; }
+.lovestats-progress-fill:after { content:''; position:absolute; inset:0; background-image: repeating-linear-gradient(45deg, rgba(255,255,255,0.4) 0 8px, transparent 8px 16px); mix-blend-mode:overlay; animation: slideDiag 6s linear infinite; }
+.lovestats-message, .lovestats-extra { display:none; }
+.lovestats-next { font-size:9px; color:#ff1493; margin-top:10px; letter-spacing:0.5px; }
+.lovestats-highlight { animation: pulsePink 1.2s ease-in-out infinite; }
+
+@keyframes slideDiag { 0% { background-position:0 0;} 100% { background-position:160px 160px; } }
+
+@keyframes pulsePink { 0%,100%{ transform:scale(1); filter:brightness(1);} 50%{ transform:scale(1.04); filter:brightness(1.2);} }
 
 .note-content {
     padding: 20px;

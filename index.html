@@ -72,6 +72,10 @@
             <img src="clock.png" alt="Clock Icon" class="icon">
             <span class="icon-label">SweetTime</span>
         </div>
+        <div class="app-icon" data-app="lovestats">
+            <img src="love-calendar.png" alt="LoveStats Icon" class="icon">
+            <span class="icon-label">LoveStats</span>
+        </div>
     </div>
 
     <div id="email-selection-container" style="display: none;">
@@ -88,13 +92,18 @@
             <h1>Bandeja de entrada</h1>
             <div class="email-item" onclick="openExistingEmail()">
                 <div class="email-sender">De: Emergencias112</div>
-                <div class="email-subject">¡Tienes 1 nuevo correo!</div>
+                <div class="email-subject">...Puñeta</div>
                 <div class="email-preview">...Cinnamoroll estaba disfrutando de un tranquilo día volando entre nubes...</div>
             </div>
             <div class="email-item new-adventure" onclick="openNewAdventure()">
                 <div class="email-sender">De: Hello Kitty</div>
                 <div class="email-subject">¡Una nueva aventura nos espera!</div>
                 <div class="email-preview">Una misteriosa aventura te aguarda...</div>
+            </div>
+            <div class="email-item new-adventure" onclick="openSnakeAdventure()">
+                <div class="email-sender">De: My Melody</div>
+                <div class="email-subject">¡Desafío dulce serpiente!</div>
+                <div class="email-preview">Un jardín de caramelos necesita orden kawaii...</div>
             </div>
         </div>
     </div>
@@ -108,9 +117,6 @@
             </div>
             <div class="window-title">NubeMail</div>
         </div>
-        <header>
-            <h1>¡Tienes 1 nuevo correo!</h1>
-        </header>
         <main>
             <section style="margin-left: 3%; margin-right: 3%; line-height: 1.5;" id="step-1" class="step active">
                 <h2>Puñeta...</h2>
@@ -200,6 +206,11 @@
                     <span id="total-time">00:00</span>
                 </div>
                 <button id="play-pause-btn" onclick="togglePlay()">⏸</button>
+                <div id="visualizer-wrapper">
+                    <canvas id="visualizer-bars" width="360" height="90"></canvas>
+                    <canvas id="visualizer-wave" width="360" height="60"></canvas>
+                    <div class="visualizer-fallback" style="display:none;">Visualizador no soportado</div>
+                </div>
             </div>        </div>
     </div>    <div id="weather-container" style="display: none;">
         <div id="window-bar">
@@ -257,9 +268,91 @@
         </div>
     </div>
 
+    <div id="lovestats-container" style="display: none;">
+        <div id="window-bar">
+            <button class="close-button" onclick="closeLoveStats()">×</button>
+            <div class="bars">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <div class="window-title">LoveStats</div>
+        </div>
+        <div class="lovestats-content">
+            <h2 class="lovestats-heading">Tiempo juntas 💖</h2>
+            <img src="love.gif" alt="Love" class="lovestats-gif" />
+            <div class="lovestats-grid">
+                <div class="stat-box">
+                    <div class="stat-label">Días</div>
+                    <div class="stat-value" id="lovestats-days">0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Semanas</div>
+                    <div class="stat-value" id="lovestats-weeks">0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Meses</div>
+                    <div class="stat-value" id="lovestats-months">0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Horas</div>
+                    <div class="stat-value" id="lovestats-hours">0</div>
+                </div>
+            </div>
+            <div class="lovestats-progress-wrapper">
+                <div class="progress-label">Progreso hasta finalizar el plan de alergia ininterrumpida</div>
+                <div class="lovestats-progress-bar">
+                    <div class="lovestats-progress-fill" id="lovestats-progress"></div>
+                </div>
+            </div>
+            <div class="lovestats-next" id="lovestats-next-milestone"></div>
+        </div>
+    </div>
+
+    <!-- Snake Adventure Container -->
+    <div id="snake-adventure-container" style="display:none;">
+        <div id="window-bar">
+            <button class="close-button" onclick="closeSnakeAdventure()">×</button>
+            <div class="bars">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <div class="window-title">NubeMail</div>
+        </div>
+        <header>
+            <h1>¡Desafío dulce serpiente!</h1>
+        </header>
+        <main>
+            <section id="snake-step-1" class="snake-step active" style="margin-left:3%;margin-right:3%;line-height:1.5;">
+                <h2>El Jardín de Caramelos</h2>
+                <p style="text-align:justify;">My Melody ha preparado un jardín lleno de caramelitos y frutas para Cinnamoroll, pero una serpiente dulce (¡tú!) debe recolectarlos con cuidado sin enredarse. Cada dulce aumenta tu longitud y tu puntuación. El desafío es infinito: ¡supera tu propio récord!</p>
+                <button onclick="startSnakeGameIntro()">Empezar</button>
+            </section>
+            <section id="snake-step-2" class="snake-step" style="text-align:center;">
+                <h2>¡Recolecta dulces!</h2>
+                <div id="snake-game-wrapper">
+                    <canvas id="snakeCanvas" width="480" height="360"></canvas>
+                    <div id="snake-ui">
+                        <div class="snake-stats">
+                            <span id="snake-score">Puntos: 0</span>
+                            <span id="snake-best">Récord: 0</span>
+                        </div>
+                        <div class="snake-instructions">Usa W A S D o flechas · P pausa</div>
+                        <button id="snake-start-btn" onclick="startSnakeGame()">¡Comenzar!</button>
+                        <button id="snake-restart-btn" style="display:none;" onclick="restartSnakeGame()">Reintentar</button>
+                        <!-- Botón de nivel eliminado para modo infinito -->
+                    </div>
+                </div>
+            </section>
+            <!-- Pantalla final eliminada para modo infinito -->
+        </main>
+    </div>
+
     <script src="window-manager.js"></script>
     <script src="script.js"></script>
     <script src="game.js"></script>
     <script src="flappy-game.js"></script>
+    <script src="snake-game.js"></script>
 </body>
 </html>

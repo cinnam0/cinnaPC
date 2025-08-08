@@ -27,7 +27,13 @@ class FlappyGame {
         this.jumpForce = -6.5; // Reduced from -8 to -6.5 for gentler jumps
         this.pipeSpeed = 2;
         this.pipeGap = 180; // Increased gap for easier gameplay
+        this.minPipeGap = 140; // Minimum gap as difficulty increases
+        this.maxPipeSpeed = 3.5; // Cap speed to keep it fun
+        this.difficultyStepTime = 9; // Every 8s adjust difficulty
         this.survivalTime = 30; // seconds to survive
+        this.lastDifficultyUpdate = 0;
+        this.pipeInterval = 1700; // ms between pipe pairs (time-based instead of frame based)
+        this.lastPipeTime = 0;
         
         // Player (Cinnamoroll)
         this.player = {
@@ -46,12 +52,18 @@ class FlappyGame {
         this.pipes = [];
         this.pipeTimer = 0;
         
+    // Score & progression
+    this.score = 0;
+    this.highScore = parseInt(localStorage.getItem('flappyHighScore') || '0', 10);
+
         // Destination markers
         this.destinations = ['Sevilla', 'Córdoba', 'Herrera', 'Granada'];
         this.currentDestinationIndex = 0;
         this.destinationMarker = null;
         this.markerTimer = 0;
         this.markerDuration = 7.5; // Show each marker for 7.5 seconds (30/4 = 7.5)
+    this.markerVisibleTime = 2500; // ms each marker stays visible
+    this.markerHideTimeout = null;
         
         // Game state
         this.startTime = 0;
@@ -103,6 +115,18 @@ class FlappyGame {
                 e.preventDefault();
                 this.jump();
             }
+            if ((e.code === 'KeyP' || e.key === 'p') && this.isPlaying && !this.gameCompleted) {
+                // Toggle pause
+                this.isPaused = !this.isPaused;
+                if (this.isPaused) {
+                    document.getElementById('game-instructions').innerHTML = '<p>Pausa - pulsa P para continuar</p>';
+                } else {
+                    document.getElementById('game-instructions').innerHTML = '<p>🎮 Presiona ESPACIO para volar</p>';
+                    // Resume timing anchor shift so timer isn't inflated by pause time
+                    this.startTime += (Date.now() - this.pauseStartTime);
+                }
+                if (this.isPaused) this.pauseStartTime = Date.now();
+            }
         });
     }
     
@@ -111,7 +135,7 @@ class FlappyGame {
     }
     
     update() {
-        if (!this.isPlaying || this.gameCompleted) return;
+        if (!this.isPlaying || this.gameCompleted || this.isPaused) return;
         
         // Update timer
         this.currentTime = (Date.now() - this.startTime) / 1000;
@@ -124,6 +148,14 @@ class FlappyGame {
             this.completeGame();
             return;
         }
+
+        // Dynamic difficulty progression
+        if (this.currentTime - this.lastDifficultyUpdate >= this.difficultyStepTime) {
+            this.lastDifficultyUpdate = this.currentTime;
+            // Slightly increase speed and reduce gap
+            this.pipeSpeed = Math.min(this.pipeSpeed + 0.3, this.maxPipeSpeed);
+            this.pipeGap = Math.max(this.pipeGap - 10, this.minPipeGap);
+        }
         
         // Update player
         this.player.velocity += this.gravity;
@@ -135,10 +167,11 @@ class FlappyGame {
             return;
         }
         
-        // Update pipes
-        this.pipeTimer++;
-        if (this.pipeTimer % 120 === 0) { // New pipe every 2 seconds at 60fps
+        // Spawn pipes based on time instead of frame count for consistency
+        const now = Date.now();
+        if (now - this.lastPipeTime > this.pipeInterval) {
             this.addPipe();
+            this.lastPipeTime = now;
         }
         
         // Move and remove pipes
@@ -147,6 +180,17 @@ class FlappyGame {
             return pipe.x + pipe.width > 0;
         });
         
+        // Score: increase when player passes a top pipe (each pair counted once)
+        this.pipes.forEach(pipe => {
+            if (pipe.type === 'top' && !pipe.scored && (this.player.x > pipe.x + pipe.width)) {
+                pipe.scored = true;
+                this.incrementScore();
+            }
+        });
+
+        // Update particles
+        this.updateParticles();
+
         // Check collisions
         this.checkCollisions();
     }
@@ -175,6 +219,17 @@ class FlappyGame {
             height: this.canvas.height - (pipeHeight + this.pipeGap) + extraHeight, // Extended height
             type: 'bottom'
         });
+    }
+
+    incrementScore() {
+        this.score++;
+        if (this.score > this.highScore) {
+            this.highScore = this.score;
+            localStorage.setItem('flappyHighScore', this.highScore);
+        }
+    // Removed velocity nudge to avoid unintended jump feeling when scoring
+        // Spawn celebratory particle
+        this.spawnParticle(this.player.x + this.player.width/2, this.player.y + this.player.height/2, true);
     }
     
     checkCollisions() {
@@ -246,6 +301,12 @@ class FlappyGame {
         this.destinationMarker.style.left = (canvasRect.left + (canvasRect.width - markerWidth) / 2) + 'px';
         this.destinationMarker.style.top = (canvasRect.top - 60) + 'px'; // 60px above the canvas
         this.destinationMarker.style.display = 'block';
+
+        // Auto hide after visibility time
+        if (this.markerHideTimeout) clearTimeout(this.markerHideTimeout);
+        this.markerHideTimeout = setTimeout(() => {
+            if (this.destinationMarker) this.destinationMarker.style.display = 'none';
+        }, this.markerVisibleTime);
     }
     
     draw() {
@@ -255,6 +316,9 @@ class FlappyGame {
         
         // Draw clouds pattern
         this.drawClouds();
+
+    // Parallax distant layer (soft white stripes)
+    this.drawParallax();
         
         // Draw pipes using sprite
         if (this.pipeImageLoaded) {
@@ -296,6 +360,9 @@ class FlappyGame {
         
         // Draw player (Cinnamoroll)
         this.drawCinnamoroll();
+
+    // Particles over everything but UI
+    this.drawParticles();
         
         // Draw UI
         this.drawUI();
@@ -309,6 +376,18 @@ class FlappyGame {
             const y = 50 + Math.sin(this.currentTime + i) * 20;
             this.drawCloud(x, y, 80, 40);
         }
+    }
+
+    drawParallax() {
+        const t = this.currentTime * 0.2;
+        this.ctx.save();
+        this.ctx.globalAlpha = 0.15;
+        this.ctx.fillStyle = '#FFFFFF';
+        for (let i = 0; i < 8; i++) {
+            const y = (i * 50 + (t * 40)) % (this.canvas.height + 50) - 50;
+            this.ctx.fillRect(0, y, this.canvas.width, 20);
+        }
+        this.ctx.restore();
     }
     
     drawCloud(x, y, width, height) {
@@ -365,6 +444,13 @@ class FlappyGame {
                 this.ctx.restore();
             }
         }
+
+        // Apply rotation to overlay based on velocity for more lively feel
+        if (this.animatedPlayer) {
+            const angle = Math.max(Math.min(this.player.velocity * 3, 55), -30); // clamp
+            this.animatedPlayer.style.transformOrigin = '50% 50%';
+            this.animatedPlayer.style.transform = `scaleX(-1) rotate(${angle}deg)`;
+        }
     }
     
     drawUI() {
@@ -396,6 +482,87 @@ class FlappyGame {
         this.ctx.strokeStyle = '#FF1493';
         this.ctx.lineWidth = 2;
         this.ctx.strokeRect(barX, barY, barWidth, barHeight);
+
+        // Score display (top-left)
+        this.ctx.textAlign = 'left';
+        this.ctx.fillStyle = '#FFFFFF';
+        this.ctx.font = 'bold 14px "Press Start 2P"';
+        this.ctx.fillText(`Score: ${this.score}`, 15, 25);
+        this.ctx.fillText(`Best: ${this.highScore}`, 15, 45);
+
+        // Pause hint
+        this.ctx.textAlign = 'right';
+        this.ctx.font = '10px "Press Start 2P"';
+        this.ctx.fillStyle = 'rgba(255,255,255,0.7)';
+        this.ctx.fillText('P: Pausa', this.canvas.width - 10, 25);
+    }
+
+    /* ---------------- Particle System (hearts) ---------------- */
+    spawnParticle(x, y, big = false) {
+        if (!this.particles) this.particles = [];
+        this.particles.push({
+            x,
+            y,
+            vx: (Math.random() - 0.5) * 1.2,
+            vy: - (Math.random() * 1.5 + 0.5),
+            life: 900,
+            born: Date.now(),
+            size: big ? 14 : 10,
+            hue: big ? 330 : 340 + Math.random() * 20
+        });
+    }
+
+    updateParticles() {
+        if (!this.particles) return;
+        const now = Date.now();
+        this.particles = this.particles.filter(p => (now - p.born) < p.life).map(p => {
+            const age = (now - p.born);
+            p.x += p.vx;
+            p.y += p.vy;
+            p.vy += 0.01; // gentle fall
+            p.alpha = 1 - age / p.life;
+            return p;
+        });
+    }
+
+    drawParticles() {
+        if (!this.particles) return;
+        this.particles.forEach(p => {
+            this.ctx.save();
+            this.ctx.globalAlpha = p.alpha;
+            this.ctx.fillStyle = `hsl(${p.hue},85%,70%)`;
+            this.drawHeart(p.x, p.y, p.size);
+            this.ctx.restore();
+        });
+    }
+
+    drawHeart(x, y, size) {
+        const ctx = this.ctx;
+        ctx.beginPath();
+        const topCurveHeight = size * 0.3;
+        ctx.moveTo(x, y + topCurveHeight);
+        ctx.bezierCurveTo(
+            x, y,
+            x - size / 2, y,
+            x - size / 2, y + topCurveHeight
+        );
+        ctx.bezierCurveTo(
+            x - size / 2, y + (size + topCurveHeight) / 2,
+            x, y + (size + topCurveHeight) / 2,
+            x, y + size
+        );
+        ctx.bezierCurveTo(
+            x, y + (size + topCurveHeight) / 2,
+            x + size / 2, y + (size + topCurveHeight) / 2,
+            x + size / 2, y + topCurveHeight
+        );
+        ctx.bezierCurveTo(
+            x + size / 2, y,
+            x, y,
+            x, y + topCurveHeight
+        );
+        ctx.closePath();
+        ctx.fill();
     }
     
     startGame() {
@@ -407,12 +574,18 @@ class FlappyGame {
         this.player.velocity = 0;
         this.pipes = [];
         this.pipeTimer = 0;
+    this.lastPipeTime = Date.now();
+    this.lastDifficultyUpdate = 0;
+    this.score = 0;
+    this.particles = [];
         
         // Reset destination markers
         this.currentDestinationIndex = 0;
         if (this.destinationMarker) {
             this.destinationMarker.style.display = 'none';
         }
+    // Show first marker immediately
+    this.showDestinationMarker();
         
         document.getElementById('start-flappy-btn').style.display = 'none';
         document.getElementById('game-instructions').innerHTML = '<p>🎮 Presiona ESPACIO para volar</p>';
@@ -421,6 +594,7 @@ class FlappyGame {
     resetGame() {
         this.isPlaying = false;
         this.gameCompleted = false;
+    this.particles = [];
         
         // Hide animated player
         if (this.animatedPlayer) {
@@ -434,7 +608,7 @@ class FlappyGame {
         
         document.getElementById('start-flappy-btn').style.display = 'block';
         document.getElementById('start-flappy-btn').textContent = '¡Intentar de nuevo!';
-        document.getElementById('game-instructions').innerHTML = '<p style="color: #ff69b4;">¡Oops! Cinnamoroll chocó con una tubería. ¡Inténtalo otra vez!</p>';
+        document.getElementById('game-instructions').innerHTML = '<p style="color: #ff69b4;">¡Oops! Cinnamoroll chocó con una nube. ¡Inténtalo otra vez!</p>';
     }
     
     completeGame() {
@@ -476,4 +650,3 @@ function completeAdventure() {
     document.getElementById('adventure-step-2').classList.remove('active');
     document.getElementById('adventure-step-3').classList.add('active');
 }
-

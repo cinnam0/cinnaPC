@@ -54,6 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const loveNoteContainer = document.getElementById('lovenote-container');
     const weatherContainer = document.getElementById('weather-container');
     const sweetTimeContainer = document.getElementById('sweettime-container');
+    const loveStatsContainer = document.getElementById('lovestats-container');
 
     if (emailSelectionContainer) {
         setupWindowDragging(emailSelectionContainer, emailSelectionContainer.querySelector('#window-bar'));
@@ -75,5 +76,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     if (sweetTimeContainer) {
         setupWindowDragging(sweetTimeContainer, sweetTimeContainer.querySelector('#window-bar'));
+    }
+    if (loveStatsContainer) {
+        setupWindowDragging(loveStatsContainer, loveStatsContainer.querySelector('#window-bar'));
     }
 });
